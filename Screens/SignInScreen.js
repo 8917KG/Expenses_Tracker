@@ -40,7 +40,8 @@ export function SignInScreen (props) {
 
     useEffect (() => {
         if (props.authStatus){
-            navigation.navigate("Expense Tracker")
+            //navigation.navigate("Expense Tracker")
+            navigation.reset({index:0, routes: [{name: "Expense Tracker"}] })
         }
     },[props.authStatus])
 

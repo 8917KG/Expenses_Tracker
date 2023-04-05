@@ -8,7 +8,8 @@ export function HomeScreen (props) {
 
     useEffect(() => {
         if( !props.authStatus){
-            navigation.navigate("Sign In")
+            //navigation.navigate("Sign In")
+            navigation.reset({index:0, routes: [{name: "Sign In"}] })
         }
     }, [props.authStatus])
 

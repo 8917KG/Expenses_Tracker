@@ -37,7 +37,8 @@ export default function App() {
 
   onAuthStateChanged(FBAuth, (user) => {
     if(user){
-      setAuth(true)
+      setAuth(user)
+      console.log(user.uid)
     }else{
       setAuth(null)
     }
@@ -63,7 +64,8 @@ export default function App() {
   }
 
   const AddData = async () => {
-    const path = "expenses"
+    const userId = auth.uid
+    const path = `userExpenses/${userId}/expenses`
     const data = {id: new Date().getTime(), description: "sample expense"}
     const ref = await addDoc(collection(FBdb, path), data)
   }
