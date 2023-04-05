@@ -38,6 +38,14 @@ export function SignUpScreen (props) {
         }
     })
 
+    useEffect (() => {
+        if (props.authStatus){
+            navigation.navigate("Expense Tracker")
+        }
+    },[props.authStatus])
+
+    
+
     return(
         <View style = {styles.page}>
             <Text style = {styles.title}>Sign Up for an Account</Text>

@@ -1,8 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TurboModuleRegistry, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
+import { useState, useEffect } from 'react';
 //Screens 
 import { HomeScreen } from './Screens/HomeScreen';
 import { SignUpScreen } from './Screens/SignUpScreen';
@@ -11,13 +11,37 @@ import { SignInScreen } from './Screens/SignInScreen';
 //firebase 
 import { firebaseConfig } from './config/config';
 import {initializeApp} from 'firebase/app';
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { 
+    getAuth,
+    createUserWithEmailAndPassword,
+    onAuthStateChanged,
+    signOut,
+    signInWithEmailAndPassword,
+  } from "firebase/auth";
+  import {
+    getFirestore,
+    doc, 
+    setDoc,
+    collection,
+    addDoc
+   } from 'firebase/firestore'
 
 const Stack = createNativeStackNavigator();
 const FBApp = initializeApp(firebaseConfig)
 const FBAuth = getAuth(FBAuth)
+const FBdb = getFirestore(FBApp)
 
 export default function App() {
+
+  const [auth, setAuth] = useState()
+
+  onAuthStateChanged(FBAuth, (user) => {
+    if(user){
+      setAuth(true)
+    }else{
+      setAuth(null)
+    }
+  })
 
   const SignUp = (email, password) => {
     createUserWithEmailAndPassword(FBAuth, email, password)
@@ -25,14 +49,37 @@ export default function App() {
     .catch((error) => console.log(error))
   }
 
+  const SignIn = (email,password)=>{
+    signInWithEmailAndPassword(FBAuth, email, password)
+    .then((userCredential)=> console.log(userCredential))
+    .catch((error) => console.log(error))
+  }
+
+  const SignOut = () => {
+    signOut(FBAuth)
+    .then(()=>{
+
+    }).catch ((error) => console.log(error))
+  }
+
+  const AddData = async () => {
+    const path = "expenses"
+    const data = {id: new Date().getTime(), description: "sample expense"}
+    const ref = await addDoc(collection(FBdb, path), data)
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Sign Up">
-          {(props) => <SignUpScreen {...props} handler={SignUp} />}
+          {(props) => <SignUpScreen {...props} handler={SignUp} authStatus = {auth}/>}
         </Stack.Screen>
-        <Stack.Screen name="Sign In" component={SignInScreen} />
-        <Stack.Screen name="Expense Tracker" component={HomeScreen} />
+        <Stack.Screen name="Sign In" >
+          {(props) => <SignInScreen {...props} handler ={SignIn} authStatus = {auth}/>}
+        </Stack.Screen>
+        <Stack.Screen name="Expense Tracker" >
+          {(props) => <HomeScreen {...props} authStatus = {auth} signOutHandler = {SignOut} add = {AddData}/>}
+        </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -6,10 +6,43 @@ import { useNavigation } from "@react-navigation/native"
 export function SignInScreen (props) {
 
     const [email, setEmail] = useState("")
+    const [vaildEmail, setValidEmail] = useState(false)
     const [password, setPassword] = useState("")
+    const [validPw, setValidPw] = useState(false)
+    const [validForm, setValidForm] = useState(false)
     
     const navigation = useNavigation()
     
+    useEffect (() => {
+        if (email.indexOf('@') > 0){
+            setValidEmail(true)
+        }else {
+            setValidEmail(false)
+        }
+    },[email])
+
+    useEffect (() => {
+        if (password.length >= 8 ){
+            setValidPw (true)
+        }
+        else{
+            setValidPw(false)
+        }
+    },[password])
+
+    useEffect (() => {
+        if (vaildEmail && validPw){
+            setValidForm(true)
+        }else{
+            setValidForm(false)
+        }
+    })
+
+    useEffect (() => {
+        if (props.authStatus){
+            navigation.navigate("Expense Tracker")
+        }
+    },[props.authStatus])
 
     return(
         <View style = {styles.page}>
@@ -34,8 +67,9 @@ export function SignInScreen (props) {
                 />
             </View>
             <TouchableOpacity 
-                style= { styles.button}
-                
+                style= { (validForm) ? styles.button : styles.buttonDisable}
+                disabled = {(validForm) ? false : true}
+                onPress={()=> props.handler(email,password)}
             >
                 <Text style = {styles.buttonText}>Sign In</Text>
             </TouchableOpacity>
