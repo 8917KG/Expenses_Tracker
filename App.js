@@ -37,6 +37,8 @@ const FBdb = getFirestore(FBApp)
 export default function App() {
 
   const [auth, setAuth] = useState()
+  const [errorMsg, setErrorMsg] = useState()
+  const [exxpenseData, setExpenseData] = useState([])
 
   onAuthStateChanged(FBAuth, (user) => {
     if(user){
@@ -44,6 +46,12 @@ export default function App() {
       console.log(user.uid)
     }else{
       setAuth(null)
+    }
+  })
+
+  useEffect (()=>{
+    if(exxpenseData.length==0 && auth){
+      GetData()
     }
   })
 
@@ -71,6 +79,20 @@ export default function App() {
     const path = `userExpenses/${userId}/expenses`
     //const data = {id: new Date().getTime(), description: "sample expense"}
     const ref = await addDoc(collection(FBdb, path), item)
+  }
+
+  const GetData = () => {
+    const userId = auth.uid
+    const path = `userExpenses/${userId}/expenses`
+    const dataQuery = query(collection(FBdb, path))
+    const unsubscribe = onSnapshot(dataQuery, (responseData)=> {
+      let expenses = []
+      responseData.forEach((expense)=>{
+        expenses.push(expense.data())
+      }) 
+      console.log(expenses)
+    })
+
   }
 
   return (
