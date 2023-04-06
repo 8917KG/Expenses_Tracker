@@ -7,6 +7,10 @@ export function HomeScreen(props) {
     const navigation = useNavigation()
 
     const [showModal, setShowModal] = useState(false)
+    const [date, setDate] = useState ("")
+    const [location, setLocation] = useState ("")
+    const [itemType, setItemType] = useState ("")
+    const [amount, setAmount] = useState ("")
 
     useEffect(() => {
         if (!props.authStatus) {
@@ -14,6 +18,17 @@ export function HomeScreen(props) {
             navigation.reset({ index: 0, routes: [{ name: "Sign In" }] })
         }
     }, [props.authStatus])
+
+    const saveExpense = () =>{
+        setShowModal(false)
+        const itemObj = {
+            date: date, 
+            location: location, 
+            itemType: itemType, 
+            amount: amount
+        }
+        props.add(itemObj)
+    }
 
     return (
         <View style={styles.screen}>
@@ -30,16 +45,30 @@ export function HomeScreen(props) {
                     <TextInput
                         style={styles.modalInput}
                         placeholder="dd/mm/yyyy"
+                        value={date}
+                        onChangeText={(val) => setDate(val)}
                     />
                     <Text>Location:</Text>
-                    <TextInput style={styles.modalInput} />
+                    <TextInput 
+                        style={styles.modalInput} 
+                        value={location}
+                        onChangeText={(val) => setLocation(val)}
+                    />
                     <Text>Item:</Text>
-                    <TextInput style={styles.modalInput} />
+                    <TextInput 
+                        style={styles.modalInput}
+                        value={itemType}
+                        onChangeText={(val) => setItemType(val)}
+                    />
                     <Text>Amount:</Text>
-                    <TextInput style={styles.modalInput} />
+                    <TextInput 
+                        style={styles.modalInput} 
+                        value={amount}
+                        onChangeText={(val) => setAmount(val)}
+                    />
                     <View style = {styles.buttonStyle}>
                         <TouchableOpacity
-                            onPress={() => setShowModal(false)}
+                            onPress={() => saveExpense()}
                             style={styles.addButton}
                         >
                             <Text style={styles.buttonText}>Save</Text>

@@ -23,7 +23,10 @@ import {
     doc, 
     setDoc,
     collection,
-    addDoc
+    addDoc,
+    query, 
+    where, 
+    onSnapshot,
    } from 'firebase/firestore'
 
 const Stack = createNativeStackNavigator();
@@ -63,11 +66,11 @@ export default function App() {
     }).catch ((error) => console.log(error))
   }
 
-  const AddData = async () => {
+  const AddData = async (item) => {
     const userId = auth.uid
     const path = `userExpenses/${userId}/expenses`
-    const data = {id: new Date().getTime(), description: "sample expense"}
-    const ref = await addDoc(collection(FBdb, path), data)
+    //const data = {id: new Date().getTime(), description: "sample expense"}
+    const ref = await addDoc(collection(FBdb, path), item)
   }
 
   return (
